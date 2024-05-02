@@ -1,0 +1,13 @@
+{
+	"commentStamp" : "",
+	"super" : "Object",
+	"category" : "CodeCoverage",
+	"classinstvars" : [ ],
+	"pools" : [ ],
+	"classvars" : [ ],
+	"instvars" : [
+		"instrumentedMethods"
+	],
+	"name" : "CoCoverage",
+	"type" : "normal"
+}

@@ -1,0 +1,11 @@
+{
+	"commentStamp" : "",
+	"super" : "LineCoverage",
+	"category" : "CodeCoverage",
+	"classinstvars" : [ ],
+	"pools" : [ ],
+	"classvars" : [ ],
+	"instvars" : [ ],
+	"name" : "LineProfiler",
+	"type" : "normal"
+}
