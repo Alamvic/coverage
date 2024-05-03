@@ -61,6 +61,15 @@ CoCoverage >> isCoveredMethod: aMethod [
 	^ (self coverageOf: aMethod) first notNil
 ]
 
+{ #category : 'coverage' }
+CoCoverage >> methodCoverage [
+	"All methods associated with their coverage."
+
+	^ instrumentedMethods keys
+		  collect: [ :method | method -> (self coverageOf: method) ]
+		  as: Dictionary
+]
+
 { #category : 'computation' }
 CoCoverage >> methodPercentage [
 
@@ -135,4 +144,20 @@ CoCoverage >> release [
 
 	instrumentedMethods keys do: [ :e |
 		e methodClass methodDictionary at: e selector put: e ]
+]
+
+{ #category : 'coverage' }
+CoCoverage >> statementCoverage [
+	"All statements associated with their coverage."
+
+	| coverages |
+	coverages := Dictionary new.
+	instrumentedMethods keysDo: [ :method |
+		(Array new: 5 streamContents: [ :s |
+			 method ast allSequenceNodes do: [ :sequence |
+				 s nextPut: sequence.
+				 s nextPutAll: sequence statements ] ])
+			with: (self coverageOf: method)
+			do: [ :statement :coverage | coverages at: statement put: coverage ] ].
+	^ coverages
 ]

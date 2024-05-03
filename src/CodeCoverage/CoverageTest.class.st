@@ -179,6 +179,22 @@ CoverageTest >> testInstrumentationOfBlocksValue [
 ]
 
 { #category : 'tests' }
+CoverageTest >> testMethodCoverage [
+
+	| m coverage |
+	m := self class >> #linearMethod.
+	c instrument: m.
+
+	self linearMethod.
+
+	coverage := c methodCoverage.
+	self assert: coverage size equals: 1.
+	self assert: coverage keys first equals: m.
+	self assert:
+		(coverage values first allSatisfy: [ :e | e = #complete ])
+]
+
+{ #category : 'tests' }
 CoverageTest >> testNotCovered [
 
 	| m |
@@ -206,6 +222,24 @@ CoverageTest >> testNotCoveredEmptyMethod [
 	c instrument: m.
 
 	self assert: (c coverageOf: m) first isNil
+]
+
+{ #category : 'tests' }
+CoverageTest >> testStatementCoverage [
+
+	| m coverage |
+	m := self class >> #linearMethod.
+	c instrument: m.
+
+	self linearMethod.
+
+	coverage := c statementCoverage.
+	self assert: coverage size equals: 3.
+	self
+		assertCollection: coverage keys
+		hasSameElements: (m ast allSequenceNodes flatCollect: [ :s |
+				 Array with: s withAll: s statements ]).
+	self assert: (coverage values allSatisfy: [ :e | e = #complete ]) 
 ]
 
 { #category : 'tests' }
