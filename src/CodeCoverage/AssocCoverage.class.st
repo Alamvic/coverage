@@ -1,6 +1,9 @@
 Class {
 	#name : 'AssocCoverage',
-	#superclass : 'LineCoverage',
+	#superclass : 'CoCoverage',
+	#instVars : [
+		'#coverage => InPerStatementProperty'
+	],
 	#category : 'CodeCoverage',
 	#package : 'CodeCoverage'
 }
@@ -15,6 +18,24 @@ AssocCoverage >> additionalBindings: instrumentation [
 			            value: nil ].
 
 	^ bindings
+]
+
+{ #category : 'instrumenting' }
+AssocCoverage >> afterStatement: statement at: index [
+
+	coverage := #complete
+]
+
+{ #category : 'instrumenting' }
+AssocCoverage >> beforeSequence: aSequence at: anIndex [
+
+	coverage := #complete
+]
+
+{ #category : 'instrumenting' }
+AssocCoverage >> beforeStatement: statement at: index [
+
+	coverage := #partial
 ]
 
 { #category : 'accessing' }

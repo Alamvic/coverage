@@ -1,6 +1,6 @@
 Class {
 	#name : 'CoCoverage',
-	#superclass : 'Object',
+	#superclass : 'InAnalysis',
 	#instVars : [
 		'instrumentedMethods'
 	],
@@ -41,7 +41,7 @@ CoCoverage >> initialize [
 CoCoverage >> instrument: aMethod [
 
 	| ast newMethod instrumentation |
-	instrumentation := self instrumentedCodeOf: aMethod.
+	instrumentation := self instrumentedCodeOfMethod: aMethod.
 	ast := instrumentation first.
 
 	newMethod := OpalCompiler new

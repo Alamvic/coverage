@@ -1,69 +1,33 @@
 Class {
 	#name : 'LineCoverage',
 	#superclass : 'CoCoverage',
+	#instVars : [
+		'#coverage => InPerMethodProperty'
+	],
 	#category : 'CodeCoverage',
 	#package : 'CodeCoverage'
 }
 
 { #category : 'api' }
-LineCoverage class >> measureCoverageOfMethods: aCollection during: aFullBlockClosure [ 
-	
-	| coverage |
-	coverage := self new.
-	aCollection do: [ :m | coverage instrument: m ].
-	aFullBlockClosure ensure: [ 
-		coverage release ].
-	^ coverage
+LineCoverage class >> measureCoverageOfMethods: aCollection during: aFullBlockClosure [
+
+	^ self instrumentMethods: aCollection during: aFullBlockClosure
 ]
 
-{ #category : 'instrumenting' }
-LineCoverage >> instrumentStatement: s at: index [
+{ #category : 'as yet unclassified' }
+LineCoverage >> afterStatement: statement at: index [
 
-	| expressionValue statementValue replacementNodes parent |
-	expressionValue := '____xpval'.
-	parent := s parent.
-	parent addTemporaryNamed: expressionValue.
-
-	statementValue := s isReturn
-		                  ifTrue: [ s value ]
-		                  ifFalse: [ s ].
-
-	replacementNodes := OrderedCollection withAll: {
-			                    (self newPartialCoverageStatementAt: index).
-			                    (RBAssignmentNode
-				                     variable:
-				                     (RBVariableNode named: expressionValue)
-				                     value: statementValue).
-			                    (self newCompleteCoverageStatementAt: index) }.
-	s isReturn
-		ifTrue: [
-			replacementNodes add:
-				(RBReturnNode value: (RBVariableNode named: expressionValue)) ]
-		ifFalse: [ replacementNodes add: (RBVariableNode named: expressionValue) ].
-
-	parent replaceNode: s withNodes: replacementNodes
+	coverage at: index put: #complete
 ]
 
-{ #category : 'instrumenting' }
-LineCoverage >> instrumentedCodeOf: aMethod [
+{ #category : 'as yet unclassified' }
+LineCoverage >> beforeSequence: aSequence at: anIndex [
 
-	| ast numberOfStatements sequences |
-	ast := aMethod parseTree.
+	coverage at: anIndex put: #complete
+]
 
-	"We have 1 more fake statement representing the start of the sequence block"
-	sequences := ast allSequenceNodes.
-	numberOfStatements := 0.
-	sequences do: [ :sequenceNode |
-		| statements sequenceIndex |
-		sequenceIndex := (numberOfStatements := numberOfStatements + 1). 
-		statements := sequenceNode statements.
-		statements withIndexDo: [ :s :i |
-			numberOfStatements := numberOfStatements + 1.
-			self instrumentStatement: s at: numberOfStatements ].
-		sequenceNode addNodeFirst:
-			(self newCompleteCoverageStatementAt: sequenceIndex) ].
+{ #category : 'as yet unclassified' }
+LineCoverage >> beforeStatement: statement at: index [
 
-	^ {
-		  ast formattedCode.
-		  numberOfStatements }
+	coverage at: index put: #partial
 ]
