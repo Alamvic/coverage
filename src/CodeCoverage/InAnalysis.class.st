@@ -51,6 +51,13 @@ InAnalysis >> beforeStatement: statement at: index [
 	"Empty"
 ]
 
+{ #category : 'initialization' }
+InAnalysis >> initialize [
+
+	super initialize.
+	instrumentedMethods := Dictionary new
+]
+
 { #category : 'instrumenting' }
 InAnalysis >> instrument: aMethod [
 
