@@ -1,9 +1,6 @@
 Class {
 	#name : 'LineCoverage',
 	#superclass : 'CoCoverage',
-	#instVars : [
-		'#coverage => InPerMethodProperty'
-	],
 	#category : 'CodeCoverage',
 	#package : 'CodeCoverage'
 }
@@ -30,4 +27,14 @@ LineCoverage >> beforeSequence: aSequence at: anIndex [
 LineCoverage >> beforeStatement: statement at: index [
 
 	coverage at: index put: #partial
+]
+
+{ #category : 'initialization' }
+LineCoverage >> initialize_coverage: coverageBinding forMethod: aMethod [
+
+	| coverageEntries |
+	coverageEntries := aMethod ast allSequenceNodes sum: [ :e |
+		                   e statements size + 1 ].
+	coverageBinding value: (Array new: coverageEntries).
+	^ coverageBinding
 ]

@@ -1,18 +1,9 @@
 Class {
 	#name : 'CoCoverage',
 	#superclass : 'InAnalysis',
-	#instVars : [
-		'instrumentedMethods'
-	],
 	#category : 'CodeCoverage',
 	#package : 'CodeCoverage'
 }
-
-{ #category : 'instrumenting' }
-CoCoverage >> additionalBindings: instrumentation [
-
-	^ { ('COVERAGE' -> (Array new: instrumentation second)) }
-]
 
 { #category : 'accessing' }
 CoCoverage >> coverageOf: aMethod [
@@ -28,31 +19,6 @@ CoCoverage >> coverageOf: aMethod [
 CoCoverage >> coveredMethods [
 	
 	^ instrumentedMethods keys select: [ :e | self isCoveredMethod: e ]
-]
-
-{ #category : 'instrumenting' }
-CoCoverage >> initialize [
-
-	super initialize.
-	instrumentedMethods := Dictionary new
-]
-
-{ #category : 'instrumenting' }
-CoCoverage >> instrument: aMethod [
-
-	| ast newMethod instrumentation |
-	instrumentation := self instrumentedCodeOfMethod: aMethod.
-	ast := instrumentation first.
-
-	newMethod := OpalCompiler new
-		             source: ast formattedCode;
-		             class: aMethod methodClass;
-		             bindings: (self additionalBindings: instrumentation);
-		             compile;
-		             install.
-
-	instrumentedMethods at: aMethod put: newMethod.
-	^ newMethod
 ]
 
 { #category : 'testing' }

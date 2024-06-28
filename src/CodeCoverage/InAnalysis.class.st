@@ -1,6 +1,9 @@
 Class {
 	#name : 'InAnalysis',
 	#superclass : 'Object',
+	#instVars : [
+		'instrumentedMethods'
+	],
 	#category : 'CodeCoverage',
 	#package : 'CodeCoverage'
 }
@@ -21,7 +24,7 @@ InAnalysis >> additionalBindings: aMethod [
 
 	^ self class slots flatCollect: [ :s |
 		  (s isKindOf: InSlot) ifTrue: [
-			  s additionalBindingsForMethod: aMethod ] ]
+			  s additionalBindingsForMethod: aMethod forAnalysis: self ] ]
 ]
 
 { #category : 'instrumenting' }
@@ -46,6 +49,24 @@ InAnalysis >> beforeSequence: aSequence at: anIndex [
 InAnalysis >> beforeStatement: statement at: index [
 
 	"Empty"
+]
+
+{ #category : 'instrumenting' }
+InAnalysis >> instrument: aMethod [
+
+	| ast newMethod instrumentation |
+	instrumentation := self instrumentedCodeOfMethod: aMethod.
+	ast := instrumentation first.
+
+	newMethod := OpalCompiler new
+		             source: ast formattedCode;
+		             class: aMethod methodClass;
+		             bindings: (self additionalBindings: aMethod);
+		             compile;
+		             install.
+
+	instrumentedMethods at: aMethod put: newMethod.
+	^ newMethod
 ]
 
 { #category : 'instrumenting' }
