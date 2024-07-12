@@ -9,18 +9,6 @@ Class {
 }
 
 { #category : 'instrumenting' }
-AssocCoverage >> additionalBindings: instrumentation [
-
-	| bindings |
-	bindings := (1 to: instrumentation second) collect: [ :i |
-		            AdditionalBinding
-			            key: ('COVERAGE_' , i asString) asSymbol
-			            value: nil ].
-
-	^ bindings
-]
-
-{ #category : 'instrumenting' }
 AssocCoverage >> afterStatement: statement at: index [
 
 	coverage := #complete
@@ -36,6 +24,12 @@ AssocCoverage >> beforeSequence: aSequence at: anIndex [
 AssocCoverage >> beforeStatement: statement at: index [
 
 	coverage := #partial
+]
+
+{ #category : 'default values' }
+AssocCoverage >> coverageDefaultValueForMethod: aMethod [ 
+	
+	^ nil
 ]
 
 { #category : 'accessing' }
