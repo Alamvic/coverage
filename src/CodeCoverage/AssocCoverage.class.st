@@ -41,12 +41,3 @@ AssocCoverage >> coverageOf: aMethod [
 		   select: [ :e | e isKindOf: AdditionalBinding ]
 		   thenCollect: [ :e | e value value ]) value
 ]
-
-{ #category : 'instrumenting' }
-AssocCoverage >> newCoverageStatementAt: index value: value [
-
-	^ RBAssignmentNode
-		  variable:
-		  (RBVariableNode named: ('COVERAGE_' , index asString) asSymbol)
-		  value: (RBLiteralNode value: value)
-]

@@ -48,29 +48,6 @@ CoCoverage >> methodPercentage [
 	^ 100 * covered / instrumentedMethods size
 ]
 
-{ #category : 'instrumenting' }
-CoCoverage >> newCompleteCoverageStatementAt: index [
-
-	^ self newCoverageStatementAt: index value: #complete
-]
-
-{ #category : 'instrumenting' }
-CoCoverage >> newCoverageStatementAt: index value: value [
-
-	^ RBMessageNode
-		  receiver: (RBVariableNode named: 'COVERAGE')
-		  selector: #at:put:
-		  arguments: {
-				  (RBLiteralNode value: index).
-				  (RBLiteralNode value: value) }
-]
-
-{ #category : 'instrumenting' }
-CoCoverage >> newPartialCoverageStatementAt: index [
-
-	^ self newCoverageStatementAt: index value: #partial
-]
-
 { #category : 'computation' }
 CoCoverage >> partialPercentage [
 

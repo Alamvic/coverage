@@ -2,7 +2,8 @@ Class {
 	#name : 'InAnalysis',
 	#superclass : 'Object',
 	#instVars : [
-		'instrumentedMethods'
+		'instrumentedMethods',
+		'hooks'
 	],
 	#category : 'CodeCoverage',
 	#package : 'CodeCoverage'
@@ -49,6 +50,20 @@ InAnalysis >> beforeSequence: aSequence at: anIndex [
 InAnalysis >> beforeStatement: statement at: index [
 
 	"Empty"
+]
+
+{ #category : 'accessing' }
+InAnalysis >> hooks [
+
+	hooks ifNotNil: [ ^ hooks ].
+
+	hooks := OrderedCollection new.
+	InHook subclasses do: [ :hookClass |
+		(hookClass isDefinedIn: self) ifTrue: [
+			hooks add: (hookClass new
+					 analysis: self;
+					 yourself) ] ].
+	^ hooks
 ]
 
 { #category : 'initialization' }

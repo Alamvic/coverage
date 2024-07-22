@@ -1,47 +1,49 @@
 Class {
 	#name : 'LineProfiler',
-	#superclass : 'LineCoverage',
+	#superclass : 'CoCoverage',
+	#instVars : [
+		'#coverage => InPerMethodProperty'
+	],
 	#category : 'CodeCoverage',
 	#package : 'CodeCoverage'
 }
 
-{ #category : 'instrumenting' }
-LineProfiler >> additionalBindings: instrumentation [
+{ #category : 'api' }
+LineProfiler class >> measureCoverageOfMethods: aCollection during: aFullBlockClosure [
 
-	^ {
-		  ('COUNTER_ENTRY' -> (Array new: instrumentation second withAll: 0)).
-		  ('COUNTER_EXIT' -> (Array new: instrumentation second withAll: 0)) }
+	^ self instrumentMethods: aCollection during: aFullBlockClosure
 ]
 
-{ #category : 'instrumenting' }
-LineProfiler >> newCompleteCoverageStatementAt: index [
+{ #category : 'as yet unclassified' }
+LineProfiler >> afterStatement: statement at: index [
 
-	^ self newIncrementCounterAt: index named: 'COUNTER_EXIT'
+	coverage at: index put: (coverage at: index) + 0.5
 ]
 
-{ #category : 'instrumenting' }
-LineProfiler >> newIncrementCounterAt: index named: varName [
-	"COUNTER_EXIT[X] at: index put: ((COUNTER_EXIT at: index) + 1)"
+{ #category : 'as yet unclassified' }
+LineProfiler >> beforeSequence: aSequence at: index [
 
-	| read inc |
-	read := RBMessageNode
-		        receiver: (RBVariableNode named: varName)
-		        selector: #at:
-		        arguments: { (RBLiteralNode value: index) }.
-	inc := RBMessageNode
-		       receiver: read
-		       selector: #+
-		       arguments: { (RBLiteralNode value: 1) }.
-	^ RBMessageNode
-		  receiver: (RBVariableNode named: varName)
-		  selector: #at:put:
-		  arguments: {
-				  (RBLiteralNode value: index).
-				  inc }
+	coverage at: index put: (coverage at: index) + 1.0
 ]
 
-{ #category : 'instrumenting' }
-LineProfiler >> newPartialCoverageStatementAt: index [
+{ #category : 'as yet unclassified' }
+LineProfiler >> beforeStatement: statement at: index [
 
-	^ self newIncrementCounterAt: index named: 'COUNTER_ENTRY'
+	coverage at: index put: (coverage at: index) + 0.5
+]
+
+{ #category : 'default values' }
+LineProfiler >> coverageDefaultValueForMethod: aCollection [ 
+	
+	^ Array new: 100 withAll: 0
+]
+
+{ #category : 'initialization' }
+LineProfiler >> initialize_coverage: coverageBinding forMethod: aMethod [
+
+	| coverageEntries |
+	coverageEntries := aMethod ast allSequenceNodes sum: [ :e |
+		                   e statements size + 1 ].
+	coverageBinding value: (Array new: coverageEntries).
+	^ coverageBinding
 ]

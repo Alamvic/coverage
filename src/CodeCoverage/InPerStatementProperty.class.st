@@ -14,11 +14,11 @@ InPerStatementProperty >> additionalBindingsForMethod: aMethod forAnalysis: anAn
 		                perform: self name , #DefaultValueForMethod:
 		                with: aMethod.
 
-	^ aMethod ast allSequenceNodes flatCollect: [ :e |
-		  (0 to: e statements size) collect: [ :i |
-			  AdditionalBinding
-				  key: (self nameForStatementAt: i)
-				  value: defaultValue ] ]
+	^ anAnalysis hooks flatCollect: [ :hook |
+		  hook
+			  additionalBindingsForProperty: self
+			  inMethod: aMethod
+			  withinAnalysis: anAnalysis ]
 ]
 
 { #category : 'accessing' }
