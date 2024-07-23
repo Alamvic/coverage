@@ -5,8 +5,8 @@ Class {
 		'analysis',
 		'package'
 	],
-	#category : 'CodeCoverage',
-	#package : 'CodeCoverage'
+	#category : 'Insight-Core',
+	#package : 'Insight-Core'
 }
 
 { #category : 'accessing' }

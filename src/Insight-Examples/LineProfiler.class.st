@@ -2,10 +2,10 @@ Class {
 	#name : 'LineProfiler',
 	#superclass : 'CoCoverage',
 	#instVars : [
-		'#coverage => InPerMethodProperty'
+		'#coverage => InPerMethodPropertySlot'
 	],
-	#category : 'CodeCoverage',
-	#package : 'CodeCoverage'
+	#category : 'Insight-Examples',
+	#package : 'Insight-Examples'
 }
 
 { #category : 'api' }
@@ -17,19 +17,19 @@ LineProfiler class >> measureCoverageOfMethods: aCollection during: aFullBlockCl
 { #category : 'as yet unclassified' }
 LineProfiler >> afterStatement: statement at: index [
 
-	coverage at: index put: (coverage at: index) + 0.5
+	coverage := coverage + 0.5
 ]
 
 { #category : 'as yet unclassified' }
 LineProfiler >> beforeSequence: aSequence at: index [
 
-	coverage at: index put: (coverage at: index) + 1.0
+	coverage := coverage + 1.0
 ]
 
 { #category : 'as yet unclassified' }
 LineProfiler >> beforeStatement: statement at: index [
 
-	coverage at: index put: (coverage at: index) + 0.5
+	coverage := coverage + 0.5
 ]
 
 { #category : 'default values' }

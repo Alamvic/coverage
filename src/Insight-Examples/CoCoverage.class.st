@@ -1,8 +1,8 @@
 Class {
 	#name : 'CoCoverage',
 	#superclass : 'InAnalysis',
-	#category : 'CodeCoverage',
-	#package : 'CodeCoverage'
+	#category : 'Insight-Examples',
+	#package : 'Insight-Examples'
 }
 
 { #category : 'accessing' }

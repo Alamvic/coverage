@@ -3,10 +3,11 @@ Class {
 	#superclass : 'Object',
 	#instVars : [
 		'instrumentedMethods',
-		'hooks'
+		'hooks',
+		'properties'
 	],
-	#category : 'CodeCoverage',
-	#package : 'CodeCoverage'
+	#category : 'Insight-Core',
+	#package : 'Insight-Core'
 }
 
 { #category : 'api' }
@@ -52,6 +53,14 @@ InAnalysis >> beforeStatement: statement at: index [
 	"Empty"
 ]
 
+{ #category : 'properties' }
+InAnalysis >> declare: propertyName as: propertyType [
+
+	properties
+		at: propertyName
+		put: (propertyType newPropertyDeclarationNamed: propertyName)
+]
+
 { #category : 'accessing' }
 InAnalysis >> hooks [
 
@@ -70,7 +79,11 @@ InAnalysis >> hooks [
 InAnalysis >> initialize [
 
 	super initialize.
-	instrumentedMethods := Dictionary new
+	instrumentedMethods := Dictionary new.
+	properties := Dictionary new.
+	self class allSlots
+		select: [ :e | e isKindOf: InSlot ]
+		thenDo: [ :e | self declare: e name as: e ]
 ]
 
 { #category : 'instrumenting' }
@@ -165,6 +178,8 @@ InAnalysis >> instrumentationNodeBeforeStatement: s atIndex: index [
 InAnalysis >> instrumentationNodeForStatement: s atIndex: index usingHook: aStatementHook [
 	"self newPartialCoverageStatementAt: index"
 
+	| localProperties |
+	localProperties := Dictionary new.
 	^ self
 		  instrumentationNodeUsingHook: aStatementHook
 		  mappingVariableRewritesUsing: [ :e :hookMethod :replacements |
@@ -180,17 +195,27 @@ InAnalysis >> instrumentationNodeForStatement: s atIndex: index usingHook: aStat
 									  slotNamed: e name
 									  ifFound: [ :slot |
 										  (slot isKindOf: InSlot)
-											  ifTrue: [ "Halt if the name introduces a conflict!"
+											  ifTrue: [
+												  | localProperty |
+												  "Halt if the name introduces a conflict!"
 												  self haltIf: [
 													  s methodNode allDefinedVariables anySatisfy: [ :dv |
 														  dv = slot name ] ].
 												  self haltIf: [
 													  s methodNode methodClass allSlots anySatisfy: [ :ds |
 														  ds name = slot name ] ].
-												  replacements
-													  at: e
-													  put:
-													  (RBVariableNode named: (slot nameForStatementAt: index)) ]
+												  localProperty := localProperties
+													                   at: e name
+													                   ifAbsentPut: [
+													                   (properties at: e name) newProperty ].
+												  e parent isAssignment
+													  ifTrue: [
+														  replacements
+															  at: e parent
+															  put:
+															  (localProperty writeNodeWithValueNode: e parent value) ]
+													  ifFalse: [
+													  replacements at: e put: localProperty readNode ] ]
 											  ifFalse: [
 											  self halt "Ok, we have a slot but not of good type" ] ]
 									  ifNone: [ "Ok, we have a variable that is not a slot.
@@ -219,9 +244,10 @@ InAnalysis >> instrumentationNodeUsingHook: aHook mappingVariableRewritesUsing: 
 	replacements := IdentityDictionary new.
 	statementCopy nodesDo: [ :e |
 		map value: e value: hookMethod value: replacements ].
+
 	replacements keysAndValuesDo: [ :node :replacement |
 		node parent replaceNode: node withNode: replacement ].
-	^ statementCopy
+	^ replacements at: statementCopy ifAbsent: statementCopy
 ]
 
 { #category : 'instrumenting' }
@@ -245,4 +271,15 @@ InAnalysis >> instrumentedCodeOfMethod: aMethod [
 	^ {
 		  ast formattedCode.
 		  numberOfStatements }
+]
+
+{ #category : 'accessing' }
+InAnalysis >> properties [
+	^ properties
+]
+
+{ #category : 'properties' }
+InAnalysis >> propertyDeclarationNamed: propertyName [
+
+	^ properties at: propertyName
 ]

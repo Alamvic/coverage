@@ -4,8 +4,8 @@ Class {
 	#instVars : [
 		'c'
 	],
-	#category : 'CodeCoverage',
-	#package : 'CodeCoverage'
+	#category : 'Insight-Tests',
+	#package : 'Insight-Tests'
 }
 
 { #category : 'tests' }

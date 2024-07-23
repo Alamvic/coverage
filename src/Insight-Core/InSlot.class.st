@@ -1,6 +1,6 @@
 Class {
 	#name : 'InSlot',
 	#superclass : 'InstanceVariableSlot',
-	#category : 'CodeCoverage',
-	#package : 'CodeCoverage'
+	#category : 'Insight-Core',
+	#package : 'Insight-Core'
 }

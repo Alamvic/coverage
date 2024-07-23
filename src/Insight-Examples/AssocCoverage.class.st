@@ -4,8 +4,8 @@ Class {
 	#instVars : [
 		'#coverage => InPerStatementProperty'
 	],
-	#category : 'CodeCoverage',
-	#package : 'CodeCoverage'
+	#category : 'Insight-Examples',
+	#package : 'Insight-Examples'
 }
 
 { #category : 'instrumenting' }
